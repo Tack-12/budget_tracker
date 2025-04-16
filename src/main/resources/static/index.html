@@ -1,0 +1,41 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Tracker</title>
+</head>
+<body>
+<h1>Budget Tracker</h1>
+
+<section id="income-section">
+    <h2>Set Income</h2>
+    <form id="income-form">
+        <input type="number" id="income-amount" placeholder="Income Amount" required>
+        <select id="frequency">
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+            <option value="bi-monthly">Bi-Monthly</option>
+        </select>
+        <button type="submit">Set Income</button>
+    </form>
+</section>
+
+<section id="expense-section">
+    <h2>Add Expense</h2>
+    <form id="expense-form">
+        <input type="text" id="expense-category" placeholder="Expense Category" required>
+        <input type="number" id="expense-amount" placeholder="Amount" required>
+        <button type="submit">Add Expense</button>
+    </form>
+</section>
+
+<section id="summary-section">
+    <h2>Budget Summary</h2>
+    <button id="load-summary">Refresh Summary</button>
+    <pre id="summary"></pre>
+</section>
+
+<script src="budget-tracker.js"></script>
+</body>
+</html>
