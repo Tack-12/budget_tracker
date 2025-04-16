@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Budget Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f7f8;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label, select, input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #summary {
+            background-color: #f0f0f0;
+            padding: 15px;
+            white-space: pre-wrap;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+<h1>Budget Tracker</h1>
+
+<form id="income-form">
+    <h3>Set Income</h3>
+    <label for="income-amount">Amount</label>
+    <input type="number" id="income-amount" required />
+    <label for="frequency">Frequency</label>
+    <select id="frequency">
+        <option value="monthly">Monthly</option>
+        <option value="bi-monthly">Bi-Monthly</option>
+        <option value="yearly">Yearly</option>
+    </select>
+    <button type="submit">Set Income</button>
+</form>
+
+<form id="expense-form">
+    <h3>Add Expense</h3>
+    <label for="expense-category">Category</label>
+    <input type="text" id="expense-category" required />
+    <label for="expense-amount">Amount</label>
+    <input type="number" id="expense-amount" required />
+    <button type="submit">Add Expense</button>
+</form>
+
+<button id="load-summary">Load Summary</button>
+
+<h3>Summary</h3>
+<pre id="summary">Click "Load Summary" to view budget summary</pre>
+
+<script src="budget-tracker.js"></script>
+</body>
+</html>
