@@ -1,10 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Budget Tracker</title>
+    <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
-$END$
+<div class="sidebar">
+    <h2>Budget Tracker</h2>
+    <nav>
+        <ul>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="add-income.html">Add Income</a></li>
+            <li><a href="add-expense.html">Add Expense</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="main">
+    <header class="top-bar">Dashboard</header>
+    <section class="content">
+        <div class="cards">
+            <div class="card">
+                <h4>Monthly Income</h4>
+                <p id="income-value">$0.00</p>
+            </div>
+            <div class="card">
+                <h4>Total Expenses</h4>
+                <p id="expenses-value">$0.00</p>
+            </div>
+            <div class="card">
+                <h4>Remaining</h4>
+                <p id="remaining-value">$0.00</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Income List</h3>
+            <ul id="income-list" class="data-list"></ul>
+        </div>
+
+        <div class="section">
+            <h3>Expense List</h3>
+            <ul id="expense-list" class="data-list"></ul>
+        </div>
+    </section>
+</div>
+
+<script src="budget-tracker.js"></script>
 </body>
 </html>

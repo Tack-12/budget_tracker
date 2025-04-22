@@ -1,0 +1,206 @@
+:root {
+    --primary: #4f46e5;
+    --secondary: #f3f4f6;
+    --text: #1f2937;
+    --bg: #ffffff;
+    --accent: #3b82f6;
+    --muted: #6b7280;
+    --shadow: rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--secondary);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 240px;
+    background: var(--primary);
+    color: var(--bg);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1rem;
+}
+.sidebar h2 {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    text-align: center;
+}
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    flex: 1;
+}
+.sidebar nav ul li {
+    margin-bottom: 1rem;
+}
+.sidebar nav ul li a {
+    color: #ffffff;
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.sidebar nav ul li a:hover {
+    background: rgba(255,255,255,0.1);
+}
+.sidebar nav ul li a.active {
+    background: rgba(255,255,255,0.2);
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {
+    background: var(--bg);
+    padding: 1rem 2rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px var(--shadow);
+    z-index: 1;
+}
+
+.content {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: var(--bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px var(--shadow);
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-4px);
+}
+.card h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: var(--muted);
+}
+.card p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.section {
+    margin-top: 2rem;
+}
+.section h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.data-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.data-list li {
+    background: var(--bg);
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    transition: background 0.2s;
+}
+.data-list li:hover {
+    background: var(--secondary);
+}
+
+/* Form styling for add-income / add-expense pages */
+.form-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    background: var(--bg);
+    padding: 3rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px var(--shadow);
+}
+.form-container h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 2rem;
+}
+.form-container label {
+    display: block;
+    margin: 0.75rem 0 0.25rem;
+    font-weight: 500;
+}
+.form-container input,
+.form-container select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+/* Notes textarea styling */
+.form-container textarea {
+    resize: none;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0.75rem 0 1rem;
+}
+.form-container button {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary);
+    color: var(--bg);
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.form-container button:hover {
+    background: var(--accent);
+}
+
+/* Category headers in expense list */
+.expense-category-header {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+/* Expense item clickable span styling */
+.data-list li .exp-item {
+    cursor: pointer;
+    flex: 1;
+}

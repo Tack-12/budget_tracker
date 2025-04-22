@@ -44,4 +44,32 @@ public class BudgetController {
         summary.put("expenses", profile.getExpenses());
         return summary;
     }
+
+    // DELETE FUNC
+    @DeleteMapping("/expense/{index}")
+    public Map<String, Object> deleteExpense(@PathVariable int index) {
+        if (profile.getIncome() == null) {
+            return Map.of("error", "Please set income first");
+        }
+        var expenses = profile.getExpenses();
+        if (index < 0 || index >= expenses.size()) {
+            return Map.of("error", "Invalid expense index");
+        }
+        expenses.remove(index);
+        return Map.of(
+                "message",         "Expense removed",
+                "totalExpenses",   profile.getTotalExpenses(),
+                "remainingBudget", profile.getRemainingBudget(),
+                "expenses",        profile.getExpenses()
+        );
+    }
+
+    // DELETE FUNC2.0
+    @DeleteMapping("/income")
+    public Map<String, Object> deleteIncome() {
+        profile.setIncome(null);
+        profile.getExpenses().clear();
+        return Map.of("message", "Income cleared");
+    }
+
 }
