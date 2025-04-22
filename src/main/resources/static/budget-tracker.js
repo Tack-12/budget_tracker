@@ -1,3 +1,5 @@
+// budget-tracker.js
+
 const incomeForm = document.getElementById('income-form');
 const expenseForm = document.getElementById('expense-form');
 const loadSummaryBtn = document.getElementById('load-summary');
