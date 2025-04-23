@@ -19,6 +19,12 @@
 <div class="main">
     <header class="top-bar">Dashboard</header>
     <section class="content">
+        <!-- Charts Section -->
+        <div class="charts">
+            <canvas id="pie-chart"></canvas>
+            <canvas id="histogram-chart"></canvas>
+        </div>
+
         <div class="cards">
             <div class="card">
                 <h4>Monthly Income</h4>
@@ -43,6 +49,9 @@
         </div>
     </section>
 </div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="dashboard.js"></script>
 </body>
 </html>

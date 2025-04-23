@@ -1,3 +1,6 @@
+/* ----------------------------------
+   Root Variables
+---------------------------------- */
 :root {
     --primary: #4f46e5;
     --secondary: #f3f4f6;
@@ -8,7 +11,12 @@
     --shadow: rgba(0,0,0,0.1);
 }
 
-* { box-sizing: border-box; }
+/* ----------------------------------
+   Base Styles
+---------------------------------- */
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -20,6 +28,9 @@ body {
     overflow: hidden;
 }
 
+/* ----------------------------------
+   Sidebar
+---------------------------------- */
 .sidebar {
     width: 240px;
     background: var(--primary);
@@ -56,12 +67,18 @@ body {
     background: rgba(255,255,255,0.2);
 }
 
+/* ----------------------------------
+   Main Layout
+---------------------------------- */
 .main {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
+/* ----------------------------------
+   Top Bar
+---------------------------------- */
 .top-bar {
     background: var(--bg);
     padding: 1rem 2rem;
@@ -71,12 +88,18 @@ body {
     z-index: 1;
 }
 
+/* ----------------------------------
+   Content Area
+---------------------------------- */
 .content {
     padding: 2rem;
     overflow-y: auto;
     flex: 1;
 }
 
+/* ----------------------------------
+   Cards Grid
+---------------------------------- */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -105,6 +128,9 @@ body {
     color: var(--accent);
 }
 
+/* ----------------------------------
+   Sections & Lists
+---------------------------------- */
 .section {
     margin-top: 2rem;
 }
@@ -112,7 +138,6 @@ body {
     margin-bottom: 1rem;
     font-size: 1.25rem;
 }
-
 .data-list {
     list-style: none;
     padding: 0;
@@ -132,7 +157,9 @@ body {
     background: var(--secondary);
 }
 
-/* Form styling for add-income / add-expense pages */
+/* ----------------------------------
+   Form Styling (Add Income / Expense)
+---------------------------------- */
 .form-container {
     position: absolute;
     top: 50%;
@@ -163,7 +190,6 @@ body {
     border-radius: 0.5rem;
     font-size: 1rem;
 }
-/* Notes textarea styling */
 .form-container textarea {
     resize: none;
     width: 100%;
@@ -191,7 +217,9 @@ body {
     background: var(--accent);
 }
 
-/* Category headers in expense list */
+/* ----------------------------------
+   Expense Category Headers
+---------------------------------- */
 .expense-category-header {
     font-weight: 600;
     font-size: 1.25rem;
@@ -199,8 +227,22 @@ body {
     margin-bottom: 0.5rem;
     color: var(--primary);
 }
-/* Expense item clickable span styling */
 .data-list li .exp-item {
     cursor: pointer;
     flex: 1;
+}
+
+/* ----------------------------------
+   Charts Section
+---------------------------------- */
+.charts {
+    display: grid;
+    grid-template-columns: 200px 200px;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+.charts canvas {
+    max-width: 200px;
+    max-height: 200px;
 }
