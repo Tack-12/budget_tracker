@@ -4,6 +4,7 @@ package com.budgettracker;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/budget")
@@ -30,18 +31,34 @@ public class BudgetController {
         return Map.of("message", "Expense added", "expense", expense);
     }
 
+    //Endpoint for allocations
+    @PostMapping("/allocations")
+    public Map<String,Object> setAllocations(@RequestBody Map<String, Double> alloc) {
+        if (profile.getIncome() == null) {
+            return Map.of("error","Please set income first");
+        }
+        profile.setAllocations(alloc);
+        return Map.of("message","Allocations set", "allocations", alloc);
+    }
+
     // Endpoint to get a summary of the budget.
     @GetMapping("/summary")
     public Map<String, Object> getSummary() {
         if (profile.getIncome() == null) {
             return Map.of("error", "Income not set");
         }
-
         Map<String, Object> summary = new HashMap<>();
         summary.put("monthlyIncome", profile.getIncome().getMonthlyIncome());
         summary.put("totalExpenses", profile.getTotalExpenses());
         summary.put("remainingBudget", profile.getRemainingBudget());
         summary.put("expenses", profile.getExpenses());
+        summary.put("allocations", profile.getAllocations());
+        Map<String, Double> remMap = new HashMap<>();
+        for (var entry : profile.getAllocations().entrySet()) {
+            remMap.put(entry.getKey(),
+                    profile.getRemainingForCategory(entry.getKey()));
+        }
+        summary.put("remainingPerCategory", remMap);
         return summary;
     }
 
