@@ -19,12 +19,7 @@
 <div class="main">
     <header class="top-bar">Dashboard</header>
     <section class="content">
-        <!-- Charts Section -->
-        <div class="charts">
-            <canvas id="pie-chart"></canvas>
-            <canvas id="histogram-chart"></canvas>
-        </div>
-
+        <!-- 1) Summary cards -->
         <div class="cards">
             <div class="card">
                 <h4>Monthly Income</h4>
@@ -39,6 +34,14 @@
                 <p id="remaining-value">$0.00</p>
             </div>
         </div>
+
+        <!-- 2) Charts moved here -->
+        <div class="charts">
+            <canvas id="pie-chart"></canvas>
+            <canvas id="histogram-chart"></canvas>
+        </div>
+
+        <!-- 3) Lists -->
         <div class="section">
             <h3>Income List</h3>
             <ul id="income-list" class="data-list"></ul>
@@ -49,6 +52,7 @@
         </div>
     </section>
 </div>
+
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
