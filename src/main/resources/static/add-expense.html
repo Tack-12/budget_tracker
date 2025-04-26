@@ -1,10 +1,11 @@
+<!--add-expense.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Add Expense</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
 <div class="sidebar">
@@ -17,17 +18,25 @@
         </ul>
     </nav>
 </div>
+
 <div class="main">
     <header class="top-bar">Add Expense</header>
     <section class="content">
         <form id="expense-form" class="form-container">
             <h2>Add Expense</h2>
+
             <label for="expense-category">Category</label>
             <select id="expense-category" required></select>
+
             <label for="expense-amount">Amount</label>
             <input type="number" id="expense-amount" required />
+
+            <label for="expense-date">Date</label>
+            <input type="date" id="expense-date" required />
+
             <label for="expense-notes">Notes / Subcategory (optional)</label>
             <textarea id="expense-notes" rows="3" placeholder="Add notes or a custom subcategory"></textarea>
+
             <button type="submit">Submit</button>
             <button type="button" onclick="window.location='dashboard.html'">Cancel</button>
         </form>

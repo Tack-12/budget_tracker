@@ -1,41 +1,53 @@
-// dashboard.js
+// src/main/resources/static/dashboard.js
 async function loadDashboard() {
     try {
-        const res = await fetch('/api/budget/summary');
+        const res  = await fetch('/api/budget/summary');
         const data = await res.json();
         if (data.error) { alert(data.error); return; }
 
-        // Render charts and header cards
+        // Charts
         renderCharts(data);
-        document.getElementById('income-value').textContent    = `$${data.monthlyIncome.toFixed(2)}`;
-        document.getElementById('expenses-value').textContent  = `$${data.totalExpenses.toFixed(2)}`;
-        document.getElementById('remaining-value').textContent = `$${data.remainingBudget.toFixed(2)}`;
 
-        // --- INCOME LIST WITH EDIT BUTTON ---
+        // Header cards
+        document.getElementById('income-value').textContent    =
+            `$${data.monthlyIncome.toFixed(2)} — ${data.incomeDate}`;
+        document.getElementById('expenses-value').textContent  =
+            `$${data.totalExpenses.toFixed(2)}`;
+        document.getElementById('remaining-value').textContent =
+            `$${data.remainingBudget.toFixed(2)}`;
+
+        // Income list with Edit & Remove
         const incList = document.getElementById('income-list');
         incList.innerHTML = `
-          <li>
-            <span class="exp-item">
-              Income – $${data.monthlyIncome.toFixed(2)}
-            </span>
-            <button class="edit-income">✎</button>
-            <button class="remove-income">×</button>
-          </li>`;
+      <li>
+        <span class="exp-item">
+          Income — $${data.monthlyIncome.toFixed(2)} — ${data.incomeDate}
+        </span>
+        <button class="edit-income">✎</button>
+        <button class="remove-income">×</button>
+      </li>`;
         incList.querySelector('.edit-income').onclick = async () => {
-            const oldAmt = data.monthlyIncome.toFixed(2);
-            const newAmtInput = prompt('Enter new income amount:', oldAmt);
-            if (newAmtInput === null) return;
-            const newAmt = parseFloat(newAmtInput);
+            const oldAmt  = data.monthlyIncome.toFixed(2);
+            const newAmtI = prompt('Enter new income amount:', oldAmt);
+            if (newAmtI === null) return;
+            const newAmt  = parseFloat(newAmtI);
             if (isNaN(newAmt) || newAmt <= 0) {
                 alert('Amount must be a positive number.');
                 return;
             }
-            const newFreq = prompt('Enter frequency (monthly, bi-monthly, yearly):', 'monthly');
+            const newFreq = prompt('Enter frequency:', 'monthly');
             if (newFreq === null) return;
+            const newDate = prompt('Enter new date (YYYY-MM-DD):', data.incomeDate);
+            if (newDate === null) return;
+
             await fetch('/api/budget/income', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: newAmt, frequency: newFreq })
+                body: JSON.stringify({
+                    amount:    newAmt,
+                    frequency: newFreq,
+                    date:      newDate
+                })
             });
             loadDashboard();
         };
@@ -44,12 +56,11 @@ async function loadDashboard() {
             loadDashboard();
         };
 
-        // --- EXPENSE LIST WITH EDIT BUTTONS ---
+        // Expense list with dates, edit & remove
         const expList = document.getElementById('expense-list');
         expList.innerHTML = '';
-        // group by category to keep your UI organized
         const grouped = data.expenses.reduce((acc, e, i) => {
-            (acc[e.category] = acc[e.category]||[]).push({ e, i });
+            (acc[e.category] = acc[e.category] || []).push({ e, i });
             return acc;
         }, {});
         Object.entries(grouped).forEach(([cat, items]) => {
@@ -61,44 +72,55 @@ async function loadDashboard() {
             items.forEach(({ e, i }) => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                  <span class="exp-item">$${e.amount.toFixed(2)}</span>
-                  <button data-idx="${i}" class="edit-expense">✎</button>
-                  <button data-idx="${i}" class="remove-expense">×</button>
-                `;
-                // show notes on amount click
-                li.querySelector('.exp-item').onclick = () => alert(e.notes || 'No notes');
+          <span class="exp-item">
+            $${e.amount.toFixed(2)} — ${e.date}
+          </span>
+          <button data-idx="${i}" class="edit-expense">✎</button>
+          <button data-idx="${i}" class="remove-expense">×</button>
+        `;
 
-                // edit handler
+                // View notes
+                li.querySelector('.exp-item').onclick = () =>
+                    alert(e.notes || 'No notes');
+
+                // Edit expense
                 li.querySelector('.edit-expense').onclick = async evt => {
-                    const idx = evt.target.dataset.idx;
-                    const exp = data.expenses[idx];
+                    const idx   = evt.target.dataset.idx;
+                    const exp   = data.expenses[idx];
                     const newCat = prompt('Enter new category:', exp.category);
                     if (newCat === null) return;
-                    const newAmtInput = prompt('Enter new amount:', exp.amount);
-                    if (newAmtInput === null) return;
-                    const newAmt = parseFloat(newAmtInput);
+                    const newAmtI = prompt('Enter new amount:', exp.amount);
+                    if (newAmtI === null) return;
+                    const newAmt  = parseFloat(newAmtI);
                     if (isNaN(newAmt) || newAmt <= 0) {
                         alert('Amount must be a positive number.');
                         return;
                     }
                     const newNotes = prompt('Enter new notes:', exp.notes) || '';
-                    // remove old entry and re-post updated one
+                    const newDate  = prompt('Enter new date (YYYY-MM-DD):', exp.date);
+                    if (newDate === null) return;
+
+                    // remove old then post updated
                     await fetch(`/api/budget/expense/${idx}`, { method: 'DELETE' });
                     await fetch('/api/budget/expense', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             category: newCat,
-                            amount: newAmt,
-                            notes: newNotes
+                            amount:   newAmt,
+                            notes:    newNotes,
+                            date:     newDate
                         })
                     });
                     loadDashboard();
                 };
 
-                // remove handler
+                // Remove expense
                 li.querySelector('.remove-expense').onclick = async evt => {
-                    await fetch(`/api/budget/expense/${evt.target.dataset.idx}`, { method: 'DELETE' });
+                    await fetch(
+                        `/api/budget/expense/${evt.target.dataset.idx}`,
+                        { method: 'DELETE' }
+                    );
                     loadDashboard();
                 };
 
@@ -113,7 +135,7 @@ async function loadDashboard() {
 
 window.addEventListener('DOMContentLoaded', loadDashboard);
 
-// chart renderer (unchanged)
+// Chart rendering unchanged
 function renderCharts(data) {
     const pieCtx = document.getElementById('pie-chart').getContext('2d');
     const histCtx = document.getElementById('histogram-chart').getContext('2d');
@@ -131,13 +153,17 @@ function renderCharts(data) {
         histLabels= histData.map((_,i) => `#${i+1}`);
     }
 
-    new Chart(pieCtx, { type:'pie', data:{ labels:pieLabels, datasets:[{ data:pieData }] }});
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: { labels: pieLabels, datasets: [{ data: pieData }] }
+    });
     new Chart(histCtx, {
-        type:'bar',
-        data:{ labels:histLabels, datasets:[{ data:histData, label:'Amount' }] },
-        options:{ scales:{ y:{ beginAtZero:true } } }
+        type: 'bar',
+        data: { labels: histLabels, datasets: [{ data: histData, label: 'Amount' }] },
+        options: { scales: { y: { beginAtZero: true } } }
     });
 }
+
 
 
 

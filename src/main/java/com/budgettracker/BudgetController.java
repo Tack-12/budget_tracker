@@ -1,4 +1,3 @@
-// BudgetController.java
 package com.budgettracker;
 
 import org.springframework.web.bind.annotation.*;
@@ -10,66 +9,66 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class BudgetController {
 
-    // In a production app, consider using a service and proper persistence.
+    // In-memory profile (no DB/auth)
     private BudgetProfile profile = new BudgetProfile();
 
-    // Endpoint to set the income; this (re)initializes the BudgetProfile.
+    /**
+     * Set or update income (with date).
+     */
     @PostMapping("/income")
     public Map<String, Object> setIncome(@RequestBody Income income) {
         profile.setIncome(income);
-        return Map.of("message", "Income set successfully", "monthlyIncome", income.getMonthlyIncome());
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("message", "Income set successfully");
+        // Use income.getMonthlyIncome() directly since income is non-null
+        resp.put("monthlyIncome", income.getMonthlyIncome());
+        resp.put("incomeDate", income.getDate());
+        return resp;
     }
 
-    // Endpoint to add an expense.
+    /**
+     * Add an expense (with date). Income must be set first.
+     */
     @PostMapping("/expense")
     public Map<String, Object> addExpense(@RequestBody Expense expense) {
         if (profile.getIncome() == null) {
             return Map.of("error", "Please set income first");
         }
         profile.addExpense(expense);
-        return Map.of("message", "Expense added", "expense", expense);
+        return Map.of("message", "Expense added successfully");
     }
 
-    // Endpoint to get a summary of the budget.
+    /**
+     * Summary endpoint, returns income, dates, totals, and expense list.
+     */
     @GetMapping("/summary")
     public Map<String, Object> getSummary() {
-        if (profile.getIncome() == null) {
-            return Map.of("error", "Income not set");
-        }
-
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("monthlyIncome", profile.getIncome().getMonthlyIncome());
-        summary.put("totalExpenses", profile.getTotalExpenses());
-        summary.put("remainingBudget", profile.getRemainingBudget());
-        summary.put("expenses", profile.getExpenses());
-        return summary;
+        Map<String, Object> resp = new HashMap<>();
+        // Safely get monthly income, default to 0 if income is not set
+        resp.put("monthlyIncome", profile.getIncome() != null ? profile.getIncome().getMonthlyIncome() : 0);
+        resp.put("incomeDate",     profile.getIncome() != null ? profile.getIncome().getDate() : null);
+        resp.put("totalExpenses",  profile.getTotalExpenses());
+        resp.put("remainingBudget", profile.getRemainingBudget());
+        resp.put("expenses",       profile.getExpenses());
+        return resp;
     }
 
-    // DELETE FUNC
+    /**
+     * Remove one expense by its index.
+     */
     @DeleteMapping("/expense/{index}")
     public Map<String, Object> deleteExpense(@PathVariable int index) {
-        if (profile.getIncome() == null) {
-            return Map.of("error", "Please set income first");
-        }
-        var expenses = profile.getExpenses();
-        if (index < 0 || index >= expenses.size()) {
-            return Map.of("error", "Invalid expense index");
-        }
-        expenses.remove(index);
-        return Map.of(
-                "message",         "Expense removed",
-                "totalExpenses",   profile.getTotalExpenses(),
-                "remainingBudget", profile.getRemainingBudget(),
-                "expenses",        profile.getExpenses()
-        );
+        profile.getExpenses().remove(index);
+        return Map.of("message", "Expense removed");
     }
 
-    // DELETE FUNC2.0
+    /**
+     * Clear income and all expenses.
+     */
     @DeleteMapping("/income")
     public Map<String, Object> deleteIncome() {
         profile.setIncome(null);
         profile.getExpenses().clear();
         return Map.of("message", "Income cleared");
     }
-
 }

@@ -5,14 +5,16 @@ public class Expense {
     private String category;
     private double amount;
     private String notes;  // <-- new
+    private String date;
 
     public Expense() {}
 
     // Updated constructor
-    public Expense(String category, double amount, String notes) {
+    public Expense(String category, double amount, String notes, String date) {
         this.category = category;
         this.amount   = amount;
         this.notes    = notes;
+        this.date     = date;
     }
 
     // Getters and setters
@@ -36,4 +38,8 @@ public class Expense {
     public void setNotes(String notes) {  // <-- new
         this.notes = notes;
     }
+
+    public String getDate() {return date;}
+    public void setDate(String date) {this.date = date;}
+
 }

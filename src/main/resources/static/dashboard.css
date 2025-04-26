@@ -161,10 +161,9 @@ body {
    Form Styling (Add Income / Expense)
 ---------------------------------- */
 .form-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    margin: 2rem auto;
+    transform: none;
     width: 90%;
     max-width: 600px;
     background: var(--bg);

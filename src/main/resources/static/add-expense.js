@@ -1,5 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
     const sel = document.getElementById('expense-category');
+    const dateInput = document.getElementById('expense-date');
+
     // populate default categories
     const defaults = [
         "Food","Entertainment","Housing","Transportation",
@@ -30,6 +32,8 @@ window.addEventListener('DOMContentLoaded', () => {
         })
         .catch(() => {});
 
+    dateInput.value = new Date().toISOString().split('T')[0];
+
     document.getElementById('expense-form').addEventListener('submit', async e => {
         e.preventDefault();
         await fetch('/api/budget/expense', {
@@ -37,7 +41,8 @@ window.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({
                 category: sel.value,
                 amount: parseFloat(document.getElementById('expense-amount').value),
-                notes: document.getElementById('expense-notes').value.trim()
+                notes: document.getElementById('expense-notes').value.trim(),
+                date: dateInput.value
             })
         });
         window.location.href = 'dashboard.html';

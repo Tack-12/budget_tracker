@@ -4,12 +4,14 @@ package com.budgettracker;
 public class Income {
     private double amount;
     private String frequency; // "monthly", "yearly", "bi-monthly", etc.
+    private String date;
 
     public Income() {}
 
-    public Income(double amount, String frequency) {
+    public Income(double amount, String frequency, String date) {
         this.amount = amount;
         this.frequency = frequency;
+        this.date = date;
     }
 
     public double getMonthlyIncome() {
@@ -38,4 +40,7 @@ public class Income {
     public void setFrequency(String frequency) {
         this.frequency = frequency;
     }
+
+    public String getDate() {return date;}
+    public void setDate(String date) {this.date = date;}
 }
