@@ -3,81 +3,63 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Budget Tracker</title>
+    <title>Welcome – Budget Tracker</title>
+    <link rel="stylesheet" href="dashboard.css" />
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f7f8;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; overflow:hidden; font-family:'Inter',sans-serif; }
+
+        /* full-screen GIF */
+        .background-gif {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
-        h1 {
+
+        /* your start box */
+        .start-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.85);
+            padding: 4rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px var(--shadow);
             text-align: center;
-            margin-bottom: 20px;
+            max-width: 500px;
+            width: 90%;
+            z-index: 1;
         }
-        form {
-            margin-bottom: 20px;
+        .start-container h1 {
+            font-size: 2.5rem; color: var(--primary); margin-bottom:1rem;
         }
-        label, select, input {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 1rem;
+        .start-container p {
+            font-size: 1.2rem; color: var(--text); margin-bottom:2rem;
         }
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .start-button {
+            padding:1rem 2rem; font-size:1.25rem;
+            background: var(--primary); color: var(--bg);
+            border:none; border-radius:0.5rem;
+            cursor:pointer; transition: background 0.3s;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #summary {
-            background-color: #f0f0f0;
-            padding: 15px;
-            white-space: pre-wrap;
-            border-radius: 4px;
-            font-family: monospace;
-        }
+        .start-button:hover { background: var(--accent); }
     </style>
 </head>
 <body>
-<h1>Budget Tracker</h1>
 
-<form id="income-form">
-    <h3>Set Income</h3>
-    <label for="income-amount">Amount</label>
-    <input type="number" id="income-amount" required />
-    <label for="frequency">Frequency</label>
-    <select id="frequency">
-        <option value="monthly">Monthly</option>
-        <option value="bi-monthly">Bi-Monthly</option>
-        <option value="yearly">Yearly</option>
-    </select>
-    <button type="submit">Set Income</button>
-</form>
+<!-- 1) The GIF must now sit next to index.html -->
+<img src="background.gif" alt="Background" class="background-gif" />
 
-<form id="expense-form">
-    <h3>Add Expense</h3>
-    <label for="expense-category">Category</label>
-    <input type="text" id="expense-category" required />
-    <label for="expense-amount">Amount</label>
-    <input type="number" id="expense-amount" required />
-    <button type="submit">Add Expense</button>
-</form>
+<!-- 2) Your Start box on top -->
+<div class="start-container">
+    <h1>Welcome to Budget Quest!</h1>
+    <p>Your journey to financial mastery begins here.</p>
+    <button class="start-button" onclick="location.href='dashboard.html'">
+        Start Budgeting
+    </button>
+</div>
 
-<button id="load-summary">Load Summary</button>
-
-<h3>Summary</h3>
-<pre id="summary">Click "Load Summary" to view budget summary</pre>
-
-<script src="dashboard.js"></script>
 </body>
 </html>
