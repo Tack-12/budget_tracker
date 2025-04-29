@@ -29,14 +29,6 @@
     <header class="top-bar">Dashboard</header>
     <section class="content">
 
-        <div class="filters">
-            <label>From <input type="date" id="filter-start"></label>
-            <label>To   <input type="date" id="filter-end"></label>
-            <label>Cat  <select id="filter-category"><option value="">All</option></select></label>
-            <button id="apply-filters">Filter</button>
-            <button id="reset-filters">Reset</button>
-        </div>
-
         <div id="budget-alert" class="alert-banner" style="display:none;">
             ⚠️ You are over budget!
         </div>
@@ -62,6 +54,15 @@
         </div>
 
         <ul id="category-breakdown" class="breakdown-list"></ul>
+
+        <!-- Filters moved here, styled like form buttons -->
+        <div class="filters">
+            <label>From <input type="date" id="filter-start"></label>
+            <label>To   <input type="date" id="filter-end"></label>
+            <label>Cat  <select id="filter-category"><option value="">All</option></select></label>
+            <button id="apply-filters">Filter</button>
+            <button id="reset-filters">Reset</button>
+        </div>
 
         <div class="section">
             <h3>Income List</h3>
