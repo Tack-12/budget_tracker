@@ -1,209 +1,233 @@
-// track last fetch for export
 window.__lastDashboardData = null;
 
-async function loadDashboard() {
+async function fetchAndRender() {
     try {
         const res = await fetch('/api/budget/summary');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (data.error) { alert(data.error); return; }
-
         window.__lastDashboardData = data;
-
-        // filters
-        let expenses = data.expenses;
-        const start = document.getElementById('filter-start').value;
-        const end   = document.getElementById('filter-end').value;
-        const cat   = document.getElementById('filter-category').value;
-        if (start)   expenses = expenses.filter(e => e.date >= start);
-        if (end)     expenses = expenses.filter(e => e.date <= end);
-        if (cat)     expenses = expenses.filter(e => e.category === cat);
-
-        renderCharts({ ...data, expenses });
-        renderCards(data);
-        renderLists(data, expenses);
-        showAlert(data.remainingBudget);
-    } catch(err) {
+        renderAll(data, data.expenses);
+    } catch (err) {
         console.error(err);
+        alert('Unable to load data: ' + err.message);
     }
 }
 
-function renderCards(data) {
+function renderAll(orig, exp) {
+    renderCards(orig);
+    renderCharts({ ...orig, expenses: exp });
+    renderLists(orig, exp);
+    showAlert(orig.remainingBudget);
+}
+
+function renderCards(d) {
+    const cur = getCurrency();
     document.getElementById('income-value').textContent =
-        `${getCurrency()}${data.monthlyIncome.toFixed(2)} — ${data.incomeDate}`;
+        `${cur}${d.monthlyIncome.toFixed(2)} — ${d.incomeDate}`;
     document.getElementById('expenses-value').textContent =
-        `${getCurrency()}${data.totalExpenses.toFixed(2)}`;
+        `${cur}${d.totalExpenses.toFixed(2)}`;
     document.getElementById('remaining-value').textContent =
-        `${getCurrency()}${data.remainingBudget.toFixed(2)}`;
+        `${cur}${d.remainingBudget.toFixed(2)}`;
 }
 
 function renderCharts(data) {
-    const pieCtx  = document.getElementById('pie-chart').getContext('2d');
-    const histCtx = document.getElementById('histogram-chart').getContext('2d');
-
     const totals = data.expenses.reduce((a,e) => {
-        a[e.category] = (a[e.category]||0) + e.amount; return a;
+        a[e.category] = (a[e.category]||0) + e.amount;
+        return a;
     }, {});
-    const pieLabels = Object.keys(totals);
-    const pieData   = Object.values(totals);
-    const histData  = data.expenses.map(e=>e.amount);
-    const histLabels= histData.map((_,i)=>`#${i+1}`);
+    const pieLabels = Object.keys(totals),
+        pieData   = Object.values(totals),
+        histData  = data.expenses.map(e=>e.amount),
+        histLabels= histData.map((_,i)=>`#${i+1}`);
 
-    new Chart(pieCtx, {
-        type: 'pie',
-        data: { labels: pieLabels, datasets: [{ data: pieData }] }
-    });
-    new Chart(histCtx, {
-        type: 'bar',
-        data: { labels: histLabels, datasets: [{ data: histData, label: 'Amount' }] },
-        options: { scales: { y: { beginAtZero:true } } }
-    });
+    new Chart(
+        document.getElementById('pie-chart').getContext('2d'),
+        { type:'pie', data:{ labels:pieLabels, datasets:[{ data:pieData }] } }
+    );
+    new Chart(
+        document.getElementById('histogram-chart').getContext('2d'),
+        { type:'bar',
+            data:{ labels:histLabels, datasets:[{ label:'Amount', data:histData }] },
+            options:{ scales:{ y:{ beginAtZero:true } } }
+        }
+    );
 
-    // breakdown list
-    const breakdown = document.getElementById('category-breakdown');
-    breakdown.innerHTML = '';
+    // breakdown
+    const bd = document.getElementById('category-breakdown');
+    bd.innerHTML = '';
     pieLabels.forEach((c,i) => {
         const li = document.createElement('li');
         li.textContent = `${c}: ${getCurrency()}${pieData[i].toFixed(2)}`;
-        breakdown.appendChild(li);
+        bd.appendChild(li);
     });
 }
 
-function renderLists(data, expenses) {
-    // income list
-    const incList = document.getElementById('income-list');
-    incList.innerHTML = `
+function renderLists(d, exp) {
+    // Income
+    const incL = document.getElementById('income-list');
+    incL.innerHTML = `
     <li>
       <span class="exp-item">
-        Income — ${getCurrency()}${data.monthlyIncome.toFixed(2)} — ${data.incomeDate}
+        Income — ${getCurrency()}${d.monthlyIncome.toFixed(2)} — ${d.incomeDate}
       </span>
       <button class="edit-income">✎</button>
       <button class="remove-income">×</button>
     </li>`;
-    incList.querySelector('.edit-income').onclick = async () => {
-        const oldAmt = data.monthlyIncome.toFixed(2);
-        const newAmtI = prompt('New income:', oldAmt);
-        if (newAmtI===null) return;
-        const newAmt = parseFloat(newAmtI);
-        if (isNaN(newAmt)||newAmt<=0) return alert('Positive number required');
-        const newFreq = prompt('Frequency:', 'monthly');
-        if (newFreq===null) return;
-        const newDate = prompt('Date (YYYY-MM-DD):', data.incomeDate);
-        if (newDate===null) return;
-        await fetch('/api/budget/income', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({ amount:newAmt, frequency:newFreq, date:newDate })
-        });
-        loadDashboard();
-    };
-    incList.querySelector('.remove-income').onclick = async () => {
+    incL.querySelector('.edit-income').onclick   = editIncome;
+    incL.querySelector('.remove-income').onclick = async () => {
         await fetch('/api/budget/income',{method:'DELETE'});
-        loadDashboard();
+        fetchAndRender();
     };
 
-    // expense list
-    const expList = document.getElementById('expense-list');
-    expList.innerHTML = '';
-    const grouped = expenses.reduce((a,e,i)=>{
-        (a[e.category]=a[e.category]||[]).push({e,i}); return a;
+    // Expenses
+    const expL = document.getElementById('expense-list');
+    expL.innerHTML = '';
+    const grouped = exp.reduce((a,e,i) => {
+        (a[e.category]=a[e.category]||[]).push({e,i});
+        return a;
     },{});
-    Object.entries(grouped).forEach(([cat,items])=>{
-        const header = document.createElement('div');
-        header.className='expense-category-header';
-        header.textContent=cat;
-        expList.appendChild(header);
-        items.forEach(({e,i})=>{
-            const li=document.createElement('li');
-            li.innerHTML=`
+    Object.entries(grouped).forEach(([cat,items]) => {
+        const h = document.createElement('div');
+        h.className = 'expense-category-header';
+        h.textContent = cat;
+        expL.appendChild(h);
+
+        items.forEach(({e,i}) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
         <span class="exp-item">
           ${getCurrency()}${e.amount.toFixed(2)} — ${e.date}
         </span>
         <button data-idx="${i}" class="edit-expense">✎</button>
         <button data-idx="${i}" class="remove-expense">×</button>
       `;
-            li.querySelector('.exp-item').onclick=()=>alert(e.notes||'No notes');
-            li.querySelector('.edit-expense').onclick=async evt=>{
-                const idx=evt.target.dataset.idx;
-                const exp=data.expenses[idx];
-                const nc=prompt('Category:',exp.category);
-                if(nc===null) return;
-                const naI=prompt('Amount:',exp.amount);
-                if(naI===null) return;
-                const na=parseFloat(naI);
-                if(isNaN(na)||na<=0) return alert('Positive number required');
-                const nn=prompt('Notes:',exp.notes)||'';
-                const nd=prompt('Date:',exp.date);
-                if(nd===null) return;
-                await fetch(`/api/budget/expense/${idx}`,{method:'DELETE'});
-                await fetch('/api/budget/expense',{
-                    method:'POST',
-                    headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({
-                        category:nc, amount:na, notes:nn, date:nd
-                    })
-                });
-                loadDashboard();
-            };
-            li.querySelector('.remove-expense').onclick=async evt=>{
+            li.querySelector('.exp-item').onclick = ()=>alert(e.notes||'No notes');
+            li.querySelector('.edit-expense').onclick   = () => editExpense(d, i);
+            li.querySelector('.remove-expense').onclick = async evt => {
                 await fetch(`/api/budget/expense/${evt.target.dataset.idx}`,{method:'DELETE'});
-                loadDashboard();
+                fetchAndRender();
             };
-            expList.appendChild(li);
+            expL.appendChild(li);
         });
     });
 
-    // populate category filter once
-    const sel=document.getElementById('filter-category');
-    if(sel.options.length===1) {
-        const cats=[...new Set(data.expenses.map(e=>e.category))];
-        cats.forEach(c=>{
-            const o=document.createElement('option');
-            o.value=o.textContent=c;
-            sel.appendChild(o);
+    // populate filter dropdown once
+    const fc = document.getElementById('filter-category');
+    if (fc.options.length===1) {
+        const cats = [...new Set(d.expenses.map(x=>x.category))];
+        cats.forEach(c => {
+            const o = document.createElement('option');
+            o.value = o.textContent = c;
+            fc.appendChild(o);
         });
     }
 }
 
+function editIncome() {
+    const d = window.__lastDashboardData;
+    const old = d.monthlyIncome.toFixed(2);
+    const naI = prompt('New income amount:', old);
+    if (naI === null) return;
+    const na = parseFloat(naI);
+    if (isNaN(na)||na<=0) return alert('Must be positive');
+    const nf = prompt('Frequency:','monthly');
+    if (nf === null) return;
+    const nd = prompt('Date (YYYY-MM-DD):', d.incomeDate);
+    if (nd === null) return;
+
+    fetch('/api/budget/income',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ amount:na, frequency:nf, date:nd })
+    }).then(fetchAndRender);
+}
+
+function editExpense(d, idx) {
+    const e = d.expenses[idx];
+    const nc = prompt('New category:', e.category);
+    if (nc === null) return;
+    const naI = prompt('New amount:', e.amount);
+    if (naI === null) return;
+    const na = parseFloat(naI);
+    if (isNaN(na)||na<=0) return alert('Must be positive');
+    const nn = prompt('Notes:', e.notes || '') || '';
+    const nd = prompt('Date (YYYY-MM-DD):', e.date);
+    if (nd === null) return;
+
+    fetch(`/api/budget/expense/${idx}`,{method:'DELETE'})
+        .then(()=>
+            fetch('/api/budget/expense',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    category: nc,
+                    amount:   na,
+                    notes:    nn,
+                    date:     nd
+                })
+            })
+        )
+        .then(fetchAndRender);
+}
+
 function showAlert(rem) {
     document.getElementById('budget-alert')
-        .style.display = rem<0 ? 'block':'none';
+        .style.display = rem < 0 ? 'block' : 'none';
 }
 
 function getCurrency() {
-    return (JSON.parse(localStorage.getItem('settings')||'{}').currency)||'$';
+    return JSON.parse(localStorage.getItem('settings')||'{}').currency || '$';
 }
 
-// exports
-document.getElementById('export-csv').onclick = () => {
-    const D = window.__lastDashboardData;
-    if(!D) return;
-    let csv='Type,Category,Amount,Date,Notes\n';
-    csv+=`Income,,${D.monthlyIncome},${D.incomeDate},\n`;
-    D.expenses.forEach(e=>{
-        csv+=`Expense,${e.category},${e.amount},${e.date},"${e.notes||''}"\n`;
-    });
-    downloadBlob(csv,'budget_export.csv','text/csv');
-};
-document.getElementById('export-json').onclick = () => {
-    const D = window.__lastDashboardData;
-    if(!D) return;
-    downloadBlob(JSON.stringify(D,null,2),'budget_export.json','application/json');
-};
-function downloadBlob(content,name,type) {
-    const blob=new Blob([content],{type});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url; a.download=name; a.click();
-    URL.revokeObjectURL(url);
+// Filters
+function applyFilters() {
+    const d = window.__lastDashboardData;
+    if (!d) return;
+    let ex = d.expenses;
+    const s = document.getElementById('filter-start').value;
+    const e = document.getElementById('filter-end').value;
+    const c = document.getElementById('filter-category').value;
+    if (s) ex = ex.filter(x=>x.date>=s);
+    if (e) ex = ex.filter(x=>x.date<=e);
+    if (c) ex = ex.filter(x=>x.category===c);
+    renderAll(d, ex);
 }
-
-// filter buttons
-document.getElementById('apply-filters').onclick = loadDashboard;
-document.getElementById('reset-filters').onclick = () => {
+function resetFilters() {
     ['filter-start','filter-end','filter-category'].forEach(id=>{
         document.getElementById(id).value='';
     });
-    loadDashboard();
-};
+    const d = window.__lastDashboardData;
+    if (d) renderAll(d, d.expenses);
+}
 
-window.addEventListener('DOMContentLoaded', loadDashboard);
+// Export
+function downloadBlob(content,name,type) {
+    const b = new Blob([content],{type});
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href=u; a.download=name; a.click();
+    URL.revokeObjectURL(u);
+}
+function exportCSV() {
+    const d = window.__lastDashboardData;
+    if (!d) return alert('No data');
+    let csv = 'Type,Category,Amount,Date,Notes\n';
+    csv += `Income,,${d.monthlyIncome},${d.incomeDate},\n`;
+    d.expenses.forEach(x=>{
+        csv += `Expense,${x.category},${x.amount},${x.date},"${x.notes||''}"\n`;
+    });
+    downloadBlob(csv,'budget_export.csv','text/csv');
+}
+function exportJSON() {
+    const d = window.__lastDashboardData;
+    if (!d) return alert('No data');
+    downloadBlob(JSON.stringify(d,null,2),'budget_export.json','application/json');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    fetchAndRender();
+    document.getElementById('apply-filters').onclick = applyFilters;
+    document.getElementById('reset-filters').onclick = resetFilters;
+    document.getElementById('export-csv').onclick = exportCSV;
+    document.getElementById('export-json').onclick = exportJSON;
+});

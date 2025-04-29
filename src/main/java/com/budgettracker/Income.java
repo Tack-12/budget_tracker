@@ -1,4 +1,3 @@
-// Income.java
 package com.budgettracker;
 
 public class Income {
@@ -20,27 +19,14 @@ public class Income {
         } else if ("bi-monthly".equalsIgnoreCase(frequency)) {
             return amount * 2;
         }
-        // Default assumes monthly
-        return amount;
+        return amount; // default monthly
     }
 
-    // Getters and setters
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(String frequency) {
-        this.frequency = frequency;
-    }
-
-    public String getDate() {return date;}
-    public void setDate(String date) {this.date = date;}
+    // getters & setters
+    public double getAmount() { return amount; }
+    public void setAmount(double amount) { this.amount = amount; }
+    public String getFrequency() { return frequency; }
+    public void setFrequency(String frequency) { this.frequency = frequency; }
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
 }

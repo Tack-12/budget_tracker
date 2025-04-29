@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('/api/budget/income', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({ amount, frequency, date })
+            body: JSON.stringify({ amount, frequency, date })
         });
         const data = await res.json();
         alert(data.message || data.error);

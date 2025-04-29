@@ -4,17 +4,14 @@ public class RecurringExpense {
     private String category;
     private double amount;
     private String notes;
-    private String frequency;   // e.g. "monthly"
     private String lastApplied; // YYYY-MM-DD
 
     public RecurringExpense() {}
 
-    public RecurringExpense(String category, double amount, String notes,
-                            String frequency, String lastApplied) {
+    public RecurringExpense(String category, double amount, String notes, String lastApplied) {
         this.category    = category;
         this.amount      = amount;
         this.notes       = notes;
-        this.frequency   = frequency;
         this.lastApplied = lastApplied;
     }
 
@@ -27,9 +24,6 @@ public class RecurringExpense {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
-
-    public String getFrequency() { return frequency; }
-    public void setFrequency(String frequency) { this.frequency = frequency; }
 
     public String getLastApplied() { return lastApplied; }
     public void setLastApplied(String lastApplied) { this.lastApplied = lastApplied; }

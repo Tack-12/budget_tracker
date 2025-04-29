@@ -17,5 +17,5 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function applyTheme(themeClass) {
     document.body.classList.remove('light-theme','dark-theme');
-    document.body.classList.add(themeClass||'light-theme');
+    document.body.classList.add(themeClass || 'light-theme');
 }

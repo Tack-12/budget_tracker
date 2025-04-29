@@ -3,28 +3,31 @@ window.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('expense-date');
 
     // default categories
-    const defaults = ["Food","Entertainment","Housing","Transportation",
+    const defaults = [
+        "Food","Entertainment","Housing","Transportation",
         "Utilities","Healthcare","Savings","Education",
-        "Personal Care","Miscellaneous"];
+        "Personal Care","Miscellaneous"
+    ];
     sel.innerHTML = '<option disabled selected>-- select or type category --</option>';
-    defaults.forEach(cat=>{
-        const o=document.createElement('option');
-        o.value=o.textContent=cat;
+    defaults.forEach(cat => {
+        const o = document.createElement('option');
+        o.value = o.textContent = cat;
         sel.appendChild(o);
     });
 
     // dynamic categories
     fetch('/api/budget/summary')
-        .then(r=>r.json())
-        .then(d=>{
-            if(Array.isArray(d.expenses)){
-                [...new Set(d.expenses.map(e=>e.category))].forEach(cat=>{
-                    const o=document.createElement('option');
-                    o.value=o.textContent=cat;
+        .then(r => r.json())
+        .then(d => {
+            if (Array.isArray(d.expenses)) {
+                [...new Set(d.expenses.map(e=>e.category))].forEach(cat => {
+                    const o = document.createElement('option');
+                    o.value = o.textContent = cat;
                     sel.appendChild(o);
                 });
             }
-        }).catch(()=>{});
+        })
+        .catch(()=>{});
 
     dateInput.value = new Date().toISOString().split('T')[0];
 
@@ -36,8 +39,8 @@ window.addEventListener('DOMContentLoaded', () => {
             notes:    document.getElementById('expense-notes').value.trim(),
             date:     dateInput.value
         };
+
         if (document.getElementById('expense-recurring').checked) {
-            payload.frequency   = 'monthly';
             payload.lastApplied = payload.date;
             await fetch('/api/budget/recurring', {
                 method:'POST',
@@ -51,6 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             });
         }
+
         window.location.href = 'dashboard.html';
     });
 });
