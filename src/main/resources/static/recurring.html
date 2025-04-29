@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Recurring Expenses - Budget Tracker</title>
+    <link rel="stylesheet" href="dashboard.css"/>
+</head>
+<body>
+<script>
+    document.body.classList.add(
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
+    );
+</script>
+<div class="sidebar">
+    <h2>Budget Tracker</h2>
+    <nav>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="add-income.html">Add Income</a></li>
+            <li><a href="add-expense.html">Add Expense</a></li>
+            <li><a href="recurring.html" class="active">Recurring</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+</div>
+<div class="main">
+    <header class="top-bar">Recurring Expenses</header>
+    <section class="content">
+        <div class="form-container">
+            <h2>New Recurring Expense</h2>
+            <label for="rec-cat">Category</label>
+            <select id="rec-cat" required></select>
+            <label for="rec-amt">Amount</label>
+            <input type="number" id="rec-amt" required/>
+            <label for="rec-date">Start Date</label>
+            <input type="date" id="rec-date" required/>
+            <label for="rec-notes">Notes (optional)</label>
+            <textarea id="rec-notes" rows="3"></textarea>
+            <label for="rec-freq">Frequency</label>
+            <select id="rec-freq">
+                <option value="monthly">Monthly</option>
+            </select>
+            <button id="rec-add">Add Recurring</button>
+        </div>
+        <div class="section">
+            <h3>Existing Recurring Expenses</h3>
+            <ul id="rec-list" class="data-list"></ul>
+        </div>
+    </section>
+</div>
+<script src="recurring.js"></script>
+</body>
+</html>

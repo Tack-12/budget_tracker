@@ -1,58 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Welcome – Budget Tracker</title>
     <link rel="stylesheet" href="dashboard.css" />
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         html, body { height:100%; overflow:hidden; font-family:'Inter',sans-serif; }
-
-        /* full-screen GIF */
         .background-gif {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: -1;
+            position: fixed; top:0; left:0;
+            width:100%; height:100%; object-fit:cover; z-index:-1;
         }
-
-        /* your start box */
         .start-container {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255,255,255,0.85);
-            padding: 4rem 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px var(--shadow);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            z-index: 1;
+            position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            background:rgba(255,255,255,0.85);
+            padding:4rem 2rem; border-radius:1rem;
+            box-shadow:0 4px 12px var(--shadow);
+            text-align:center; max-width:500px; width:90%; z-index:1;
         }
-        .start-container h1 {
-            font-size: 2.5rem; color: var(--primary); margin-bottom:1rem;
-        }
-        .start-container p {
-            font-size: 1.2rem; color: var(--text); margin-bottom:2rem;
-        }
+        .start-container h1 { font-size:2.5rem; color:var(--primary); margin-bottom:1rem; }
+        .start-container p  { font-size:1.2rem; color:var(--text); margin-bottom:2rem; }
         .start-button {
             padding:1rem 2rem; font-size:1.25rem;
-            background: var(--primary); color: var(--bg);
+            background:var(--primary); color:var(--bg);
             border:none; border-radius:0.5rem;
-            cursor:pointer; transition: background 0.3s;
+            cursor:pointer; transition:background 0.3s;
         }
-        .start-button:hover { background: var(--accent); }
+        .start-button:hover { background:var(--accent); }
     </style>
 </head>
 <body>
-
-<!-- 1) The GIF must now sit next to index.html -->
+<script>
+    document.body.classList.add(
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
+    );
+</script>
 <img src="background.gif" alt="Background" class="background-gif" />
-
-<!-- 2) Your Start box on top -->
 <div class="start-container">
     <h1>Welcome to Budget Quest!</h1>
     <p>Your journey to financial mastery begins here.</p>
@@ -60,6 +44,5 @@
         Start Budgeting
     </button>
 </div>
-
 </body>
 </html>

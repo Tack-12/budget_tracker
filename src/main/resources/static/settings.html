@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Settings - Budget Tracker</title>
+    <link rel="stylesheet" href="dashboard.css"/>
+</head>
+<body>
+<script>
+    document.body.classList.add(
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
+    );
+</script>
+<div class="sidebar">
+    <h2>Budget Tracker</h2>
+    <nav>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="add-income.html">Add Income</a></li>
+            <li><a href="add-expense.html">Add Expense</a></li>
+            <li><a href="recurring.html">Recurring</a></li>
+            <li><a href="settings.html" class="active">Settings</a></li>
+        </ul>
+    </nav>
+</div>
+<div class="main">
+    <header class="top-bar">Settings</header>
+    <section class="content">
+        <div class="form-container">
+            <h2>App Settings</h2>
+            <label>Currency:
+                <select id="setting-currency">
+                    <option value="$">USD ($)</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="£">GBP (£)</option>
+                </select>
+            </label>
+            <label>Theme:
+                <select id="setting-theme">
+                    <option value="light-theme">Light</option>
+                    <option value="dark-theme">Dark</option>
+                </select>
+            </label>
+            <button id="save-settings">Save Settings</button>
+        </div>
+    </section>
+</div>
+<script src="settings.js"></script>
+</body>
+</html>
