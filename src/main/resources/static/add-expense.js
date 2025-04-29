@@ -2,7 +2,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const sel = document.getElementById('expense-category');
     const dateInput = document.getElementById('expense-date');
 
-    // default categories
     const defaults = [
         "Food","Entertainment","Housing","Transportation",
         "Utilities","Healthcare","Savings","Education",
@@ -15,7 +14,6 @@ window.addEventListener('DOMContentLoaded', () => {
         sel.appendChild(o);
     });
 
-    // dynamic categories
     fetch('/api/budget/summary')
         .then(r => r.json())
         .then(d => {

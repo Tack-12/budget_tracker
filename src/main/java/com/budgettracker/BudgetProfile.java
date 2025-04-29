@@ -34,7 +34,7 @@ public class BudgetProfile {
     }
 
     /**
-     * Once-per-month, auto-apply any monthly recurring expenses.
+     * Once‐per‐month, auto‐apply any monthly recurring expenses (flagged).
      */
     public void applyRecurrings() {
         LocalDate now = LocalDate.now();
@@ -46,10 +46,13 @@ public class BudgetProfile {
                 if (last.getYear() != now.getYear() || last.getMonth() != now.getMonth()) {
                     int day = Math.min(last.getDayOfMonth(), now.lengthOfMonth());
                     String newDate = now.withDayOfMonth(day).toString();
+                    // add flagged recurring expense
                     expenses.add(new Expense(
                             r.getCategory(),
                             r.getAmount(),
-                            r.getNotes(),
+                            (r.getNotes() != null && !r.getNotes().isEmpty()
+                                    ? r.getNotes() + " (recurring)"
+                                    : "(recurring)"),
                             newDate
                     ));
                     r.setLastApplied(newDate);

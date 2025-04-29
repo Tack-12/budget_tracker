@@ -8,7 +8,7 @@
 <body>
 <script>
     document.body.classList.add(
-        JSON.parse(localStorage.getItem('settings')||'{}').theme||'light-theme'
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
     );
 </script>
 
@@ -20,6 +20,7 @@
             <li><a href="add-income.html">Add Income</a></li>
             <li><a href="add-expense.html">Add Expense</a></li>
             <li><a href="settings.html">Settings</a></li>
+            <li><a href="export.html">Export</a></li>
         </ul>
     </nav>
 </div>
@@ -34,11 +35,6 @@
             <label>Cat  <select id="filter-category"><option value="">All</option></select></label>
             <button id="apply-filters">Filter</button>
             <button id="reset-filters">Reset</button>
-        </div>
-
-        <div class="export-buttons">
-            <button id="export-csv">Export CSV</button>
-            <button id="export-json">Export JSON</button>
         </div>
 
         <div id="budget-alert" class="alert-banner" style="display:none;">

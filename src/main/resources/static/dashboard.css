@@ -1,4 +1,8 @@
-:root {
+/* ----------------------------------
+   Theme Variables
+---------------------------------- */
+/* Light Theme (default) */
+body.light-theme {
     --primary:   #4f46e5;
     --secondary: #f3f4f6;
     --text:      #1f2937;
@@ -7,104 +11,260 @@
     --muted:     #6b7280;
     --shadow:    rgba(0,0,0,0.1);
 }
-* { box-sizing:border-box; }
+
+/* Dark Theme */
+body.dark-theme {
+    --primary:   #374151;
+    --secondary: #1f2937;
+    --text:      #f3f4f6;
+    --bg:        #111827;
+    --accent:    #60a5fa;
+    --muted:     #9ca3af;
+    --shadow:    rgba(0,0,0,0.5);
+}
+
+/* ----------------------------------
+   Base & Utility Styles
+---------------------------------- */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    margin:0; font-family:'Inter',sans-serif;
-    background:var(--secondary); color:var(--text);
-    display:flex; height:100vh; overflow:hidden;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--secondary);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
 }
+
+/* ----------------------------------
+   Sidebar
+---------------------------------- */
 .sidebar {
-    width:240px; background:var(--primary); color:var(--bg);
-    display:flex; flex-direction:column; padding:2rem 1rem;
+    width: 240px;
+    background: var(--primary);
+    color: var(--bg);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1rem;
 }
-.sidebar h2 { text-align:center; margin-bottom:2rem; }
-.sidebar nav ul { list-style:none; padding:0; flex:1; }
-.sidebar nav ul li { margin-bottom:1rem; }
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    flex: 1;
+}
+.sidebar nav ul li {
+    margin-bottom: 1rem;
+}
 .sidebar nav ul li a {
-    display:block; color:#fff; text-decoration:none;
-    padding:0.75rem 1rem; border-radius:0.5rem;
-    transition:background 0.2s;
+    display: block;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
 }
-.sidebar nav ul li a:hover { background:rgba(255,255,255,0.1); }
-.sidebar nav ul li a.active { background:rgba(255,255,255,0.2); }
+.sidebar nav ul li a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.sidebar nav ul li a.active {
+    background: rgba(255, 255, 255, 0.2);
+}
 
-.main { flex:1; display:flex; flex-direction:column; }
+/* ----------------------------------
+   Main Layout
+---------------------------------- */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ----------------------------------
+   Top Bar
+---------------------------------- */
 .top-bar {
-    background:var(--bg); padding:1rem 2rem;
-    font-size:1.75rem; font-weight:600;
-    box-shadow:0 2px 4px var(--shadow); z-index:1;
-}
-.content { padding:2rem; overflow-y:auto; flex:1; }
-
-.filters, .export-buttons {
-    display:flex; gap:1rem; margin-bottom:1rem;
+    background: var(--bg);
+    padding: 1rem 2rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px var(--shadow);
+    z-index: 1;
 }
 
+/* ----------------------------------
+   Content Area
+---------------------------------- */
+.content {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* ----------------------------------
+   Filters
+---------------------------------- */
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ----------------------------------
+   Alert Banner
+---------------------------------- */
 .alert-banner {
-    background:#e53e3e; color:#fff;
-    padding:0.75rem; border-radius:0.5rem;
-    text-align:center; margin-bottom:1rem;
+    background: #e53e3e;
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
+/* ----------------------------------
+   Cards Grid
+---------------------------------- */
 .cards {
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-    gap:1.5rem; margin-bottom:1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 .card {
-    background:var(--bg); padding:1.5rem;
-    border-radius:0.75rem; box-shadow:0 4px 8px var(--shadow);
-    transition:transform 0.2s;
+    background: var(--bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 8px var(--shadow);
+    transition: transform 0.2s;
 }
-.card:hover { transform:translateY(-4px); }
-.card h4 { margin:0 0 0.5rem; font-size:1rem; color:var(--muted); }
-.card p  { margin:0; font-size:1.5rem; font-weight:700; color:var(--accent); }
+.card:hover {
+    transform: translateY(-4px);
+}
+.card h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: var(--muted);
+}
+.card p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
 
+/* ----------------------------------
+   Charts Section
+---------------------------------- */
 .charts {
-    display:grid; grid-template-columns:200px 200px;
-    gap:1rem; margin-bottom:2rem; justify-content:center;
+    display: grid;
+    grid-template-columns: 200px 200px;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
 }
-.charts canvas { max-width:200px; max-height:200px; }
+.charts canvas {
+    max-width: 200px;
+    max-height: 200px;
+}
 
+/* ----------------------------------
+   Category Breakdown
+---------------------------------- */
 .breakdown-list {
-    list-style:none; padding:0; margin:0 0 2rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
 }
 .breakdown-list li {
-    font-size:0.9rem; margin:0.25rem 0;
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
 }
 
-.section { margin-top:2rem; }
-.section h3 { margin-bottom:1rem; font-size:1.25rem; }
+/* ----------------------------------
+   Sections & Lists
+---------------------------------- */
+.section {
+    margin-top: 2rem;
+}
+.section h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
 .data-list {
-    list-style:none; padding:0; margin:0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 .data-list li {
-    background:var(--bg); margin-bottom:0.5rem;
-    padding:0.75rem 1rem; border-radius:0.5rem;
-    box-shadow:0 2px 4px var(--shadow);
-    display:flex; justify-content:space-between;
-    transition:background 0.2s;
+    background: var(--bg);
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    transition: background 0.2s;
 }
-.data-list li:hover { background:var(--secondary); }
-.data-list li .exp-item { cursor:pointer; flex:1; }
+.data-list li:hover {
+    background: var(--secondary);
+}
+.data-list li .exp-item {
+    cursor: pointer;
+    flex: 1;
+}
 
+/* ----------------------------------
+   Form Styling
+---------------------------------- */
 .form-container {
-    margin:2rem auto; width:90%; max-width:600px;
-    background:var(--bg); padding:3rem;
-    border-radius:0.75rem; box-shadow:0 4px 8px var(--shadow);
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 600px;
+    background: var(--bg);
+    padding: 3rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 8px var(--shadow);
 }
-.form-container h2 { text-align:center; margin-bottom:1.5rem; }
-.form-container label { display:block; margin:0.75rem 0 0.25rem; }
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.form-container label {
+    display: block;
+    margin: 0.75rem 0 0.25rem;
+}
 .form-container input,
 .form-container select,
 .form-container textarea {
-    width:100%; padding:0.75rem; border:1px solid #ccc;
-    border-radius:0.5rem; font-size:1rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-size: 1rem;
 }
-.form-container textarea { resize:none; margin-bottom:1rem; }
+.form-container textarea {
+    resize: none;
+    margin-bottom: 1rem;
+}
 .form-container button {
-    width:100%; padding:1rem; margin-top:1.5rem;
-    background:var(--primary); color:var(--bg);
-    border:none; border-radius:0.5rem; font-size:1rem;
-    cursor:pointer;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    background: var(--primary);
+    color: var(--bg);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
 }
-.form-container button:hover { background:var(--accent); }
+.form-container button:hover {
+    background: var(--accent);
+}

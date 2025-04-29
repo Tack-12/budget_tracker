@@ -8,7 +8,7 @@
 <body>
 <script>
     document.body.classList.add(
-        JSON.parse(localStorage.getItem('settings')||'{}').theme||'light-theme'
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
     );
 </script>
 <div class="sidebar">
@@ -19,6 +19,7 @@
             <li><a href="add-income.html">Add Income</a></li>
             <li><a href="add-expense.html">Add Expense</a></li>
             <li><a href="settings.html" class="active">Settings</a></li>
+            <li><a href="export.html">Export</a></li>
         </ul>
     </nav>
 </div>

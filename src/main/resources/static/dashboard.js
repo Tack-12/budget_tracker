@@ -52,7 +52,6 @@ function renderCharts(data) {
         }
     );
 
-    // breakdown
     const bd = document.getElementById('category-breakdown');
     bd.innerHTML = '';
     pieLabels.forEach((c,i) => {
@@ -63,7 +62,6 @@ function renderCharts(data) {
 }
 
 function renderLists(d, exp) {
-    // Income
     const incL = document.getElementById('income-list');
     incL.innerHTML = `
     <li>
@@ -79,13 +77,12 @@ function renderLists(d, exp) {
         fetchAndRender();
     };
 
-    // Expenses
     const expL = document.getElementById('expense-list');
     expL.innerHTML = '';
     const grouped = exp.reduce((a,e,i) => {
         (a[e.category]=a[e.category]||[]).push({e,i});
         return a;
-    },{});
+    }, {});
     Object.entries(grouped).forEach(([cat,items]) => {
         const h = document.createElement('div');
         h.className = 'expense-category-header';
@@ -111,7 +108,6 @@ function renderLists(d, exp) {
         });
     });
 
-    // populate filter dropdown once
     const fc = document.getElementById('filter-category');
     if (fc.options.length===1) {
         const cats = [...new Set(d.expenses.map(x=>x.category))];
@@ -125,15 +121,14 @@ function renderLists(d, exp) {
 
 function editIncome() {
     const d = window.__lastDashboardData;
-    const old = d.monthlyIncome.toFixed(2);
-    const naI = prompt('New income amount:', old);
-    if (naI === null) return;
+    const naI = prompt('New income amount:', d.monthlyIncome.toFixed(2));
+    if (naI===null) return;
     const na = parseFloat(naI);
     if (isNaN(na)||na<=0) return alert('Must be positive');
     const nf = prompt('Frequency:','monthly');
-    if (nf === null) return;
+    if (nf===null) return;
     const nd = prompt('Date (YYYY-MM-DD):', d.incomeDate);
-    if (nd === null) return;
+    if (nd===null) return;
 
     fetch('/api/budget/income',{
         method:'POST',
@@ -145,26 +140,21 @@ function editIncome() {
 function editExpense(d, idx) {
     const e = d.expenses[idx];
     const nc = prompt('New category:', e.category);
-    if (nc === null) return;
+    if (nc===null) return;
     const naI = prompt('New amount:', e.amount);
-    if (naI === null) return;
+    if (naI===null) return;
     const na = parseFloat(naI);
     if (isNaN(na)||na<=0) return alert('Must be positive');
-    const nn = prompt('Notes:', e.notes || '') || '';
+    const nn = prompt('Notes:', e.notes||'') || '';
     const nd = prompt('Date (YYYY-MM-DD):', e.date);
-    if (nd === null) return;
+    if (nd===null) return;
 
     fetch(`/api/budget/expense/${idx}`,{method:'DELETE'})
         .then(()=>
             fetch('/api/budget/expense',{
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({
-                    category: nc,
-                    amount:   na,
-                    notes:    nn,
-                    date:     nd
-                })
+                body: JSON.stringify({ category:nc, amount:na, notes:nn, date:nd })
             })
         )
         .then(fetchAndRender);
@@ -179,7 +169,6 @@ function getCurrency() {
     return JSON.parse(localStorage.getItem('settings')||'{}').currency || '$';
 }
 
-// Filters
 function applyFilters() {
     const d = window.__lastDashboardData;
     if (!d) return;
@@ -194,40 +183,14 @@ function applyFilters() {
 }
 function resetFilters() {
     ['filter-start','filter-end','filter-category'].forEach(id=>{
-        document.getElementById(id).value='';
+        document.getElementById(id).value = '';
     });
     const d = window.__lastDashboardData;
     if (d) renderAll(d, d.expenses);
-}
-
-// Export
-function downloadBlob(content,name,type) {
-    const b = new Blob([content],{type});
-    const u = URL.createObjectURL(b);
-    const a = document.createElement('a');
-    a.href=u; a.download=name; a.click();
-    URL.revokeObjectURL(u);
-}
-function exportCSV() {
-    const d = window.__lastDashboardData;
-    if (!d) return alert('No data');
-    let csv = 'Type,Category,Amount,Date,Notes\n';
-    csv += `Income,,${d.monthlyIncome},${d.incomeDate},\n`;
-    d.expenses.forEach(x=>{
-        csv += `Expense,${x.category},${x.amount},${x.date},"${x.notes||''}"\n`;
-    });
-    downloadBlob(csv,'budget_export.csv','text/csv');
-}
-function exportJSON() {
-    const d = window.__lastDashboardData;
-    if (!d) return alert('No data');
-    downloadBlob(JSON.stringify(d,null,2),'budget_export.json','application/json');
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     fetchAndRender();
     document.getElementById('apply-filters').onclick = applyFilters;
     document.getElementById('reset-filters').onclick = resetFilters;
-    document.getElementById('export-csv').onclick = exportCSV;
-    document.getElementById('export-json').onclick = exportJSON;
 });

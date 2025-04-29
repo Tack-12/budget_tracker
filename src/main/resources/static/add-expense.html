@@ -8,7 +8,7 @@
 <body>
 <script>
     document.body.classList.add(
-        JSON.parse(localStorage.getItem('settings')||'{}').theme||'light-theme'
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
     );
 </script>
 <div class="sidebar">
@@ -19,6 +19,7 @@
             <li><a href="add-income.html">Add Income</a></li>
             <li><a href="add-expense.html" class="active">Add Expense</a></li>
             <li><a href="settings.html">Settings</a></li>
+            <li><a href="export.html">Export</a></li>
         </ul>
     </nav>
 </div>
@@ -40,7 +41,7 @@
                 Recurring monthly
             </label>
             <button type="submit">Submit</button>
-            <button type="button" onclick="window.location='dashboard.html'">Cancel</button>
+            <button type="button" onclick="location.href='dashboard.html'">Cancel</button>
         </form>
     </section>
 </div>
