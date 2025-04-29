@@ -1,18 +1,30 @@
 /* ----------------------------------
-   Root Variables
+   Theme Variables
 ---------------------------------- */
-:root {
-    --primary: #4f46e5;
+/* Light Theme (default) */
+body.light-theme {
+    --primary:   #4f46e5;
     --secondary: #f3f4f6;
-    --text: #1f2937;
-    --bg: #ffffff;
-    --accent: #3b82f6;
-    --muted: #6b7280;
-    --shadow: rgba(0,0,0,0.1);
+    --text:      #1f2937;
+    --bg:        #ffffff;
+    --accent:    #3b82f6;
+    --muted:     #6b7280;
+    --shadow:    rgba(0,0,0,0.1);
+}
+
+/* Dark Theme */
+body.dark-theme {
+    --primary:   #374151;
+    --secondary: #1f2937;
+    --text:      #f3f4f6;
+    --bg:        #111827;
+    --accent:    #60a5fa;
+    --muted:     #9ca3af;
+    --shadow:    rgba(0,0,0,0.5);
 }
 
 /* ----------------------------------
-   Base Styles
+   Base & Utility Styles
 ---------------------------------- */
 * {
     box-sizing: border-box;
@@ -40,9 +52,8 @@ body {
     padding: 2rem 1rem;
 }
 .sidebar h2 {
-    margin-bottom: 2rem;
-    font-size: 1.5rem;
     text-align: center;
+    margin-bottom: 2rem;
 }
 .sidebar nav ul {
     list-style: none;
@@ -53,18 +64,18 @@ body {
     margin-bottom: 1rem;
 }
 .sidebar nav ul li a {
-    color: #ffffff;
     display: block;
+    color: #ffffff;
+    text-decoration: none;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    text-decoration: none;
     transition: background 0.2s;
 }
 .sidebar nav ul li a:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 .sidebar nav ul li a.active {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* ----------------------------------
@@ -98,14 +109,35 @@ body {
 }
 
 /* ----------------------------------
+   Filters
+---------------------------------- */
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ----------------------------------
+   Alert Banner
+---------------------------------- */
+.alert-banner {
+    background: #e53e3e;
+    color: #fff;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* ----------------------------------
    Cards Grid
 ---------------------------------- */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
-
 .card {
     background: var(--bg);
     border-radius: 0.75rem;
@@ -126,6 +158,34 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--accent);
+}
+
+/* ----------------------------------
+   Charts Section
+---------------------------------- */
+.charts {
+    display: grid;
+    grid-template-columns: 200px 200px;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+.charts canvas {
+    max-width: 200px;
+    max-height: 200px;
+}
+
+/* ----------------------------------
+   Category Breakdown
+---------------------------------- */
+.breakdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+}
+.breakdown-list li {
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
 }
 
 /* ----------------------------------
@@ -156,14 +216,16 @@ body {
 .data-list li:hover {
     background: var(--secondary);
 }
+.data-list li .exp-item {
+    cursor: pointer;
+    flex: 1;
+}
 
 /* ----------------------------------
-   Form Styling (Add Income / Expense)
+   Form Styling
 ---------------------------------- */
 .form-container {
-    position: relative;
     margin: 2rem auto;
-    transform: none;
     width: 90%;
     max-width: 600px;
     background: var(--bg);
@@ -172,17 +234,16 @@ body {
     box-shadow: 0 4px 8px var(--shadow);
 }
 .form-container h2 {
-    margin-bottom: 1.5rem;
     text-align: center;
-    font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
 .form-container label {
     display: block;
     margin: 0.75rem 0 0.25rem;
-    font-weight: 500;
 }
 .form-container input,
-.form-container select {
+.form-container select,
+.form-container textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ccc;
@@ -191,57 +252,19 @@ body {
 }
 .form-container textarea {
     resize: none;
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    line-height: 1.5;
-    margin: 0.75rem 0 1rem;
+    margin-bottom: 1rem;
 }
 .form-container button {
-    margin-top: 1.5rem;
     width: 100%;
     padding: 1rem;
+    margin-top: 1.5rem;
     background: var(--primary);
     color: var(--bg);
     border: none;
     border-radius: 0.5rem;
-    font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
 }
 .form-container button:hover {
     background: var(--accent);
-}
-
-/* ----------------------------------
-   Expense Category Headers
----------------------------------- */
-.expense-category-header {
-    font-weight: 600;
-    font-size: 1.25rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--primary);
-}
-.data-list li .exp-item {
-    cursor: pointer;
-    flex: 1;
-}
-
-/* ----------------------------------
-   Charts Section
----------------------------------- */
-.charts {
-    display: grid;
-    grid-template-columns: 200px 200px;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    justify-content: center;
-}
-.charts canvas {
-    max-width: 200px;
-    max-height: 200px;
 }

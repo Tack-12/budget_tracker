@@ -1,13 +1,16 @@
-<!--add-income.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Add Income</title>
     <link rel="stylesheet" href="dashboard.css"/>
 </head>
 <body>
+<script>
+    document.body.classList.add(
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
+    );
+</script>
 <div class="sidebar">
     <h2>Budget Tracker</h2>
     <nav>
@@ -15,6 +18,8 @@
             <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="add-income.html" class="active">Add Income</a></li>
             <li><a href="add-expense.html">Add Expense</a></li>
+            <li><a href="settings.html">Settings</a></li>
+            <li><a href="export.html">Export</a></li>
         </ul>
     </nav>
 </div>
@@ -23,26 +28,21 @@
     <section class="content">
         <form id="income-form" class="form-container">
             <h2>Add Income</h2>
-
             <label for="income-amount">Amount</label>
             <input type="number" id="income-amount" required/>
-
             <label for="frequency">Frequency</label>
             <select id="frequency" required>
-            <option value="monthly">Monthly</option>
-            <option value="bi-monthly">Bi-Monthly</option>
-            <option value="yearly">Yearly</option>
+                <option value="monthly">Monthly</option>
+                <option value="bi-monthly">Bi-Monthly</option>
+                <option value="yearly">Yearly</option>
             </select>
-
             <label for="income-date">Date</label>
             <input type="date" id="income-date" required/>
-
             <button type="submit">Submit</button>
-            <button type="button" onclick="window.location='dashboard.html'">Cancel</button>
+            <button type="button" onclick="location.href='dashboard.html'">Cancel</button>
         </form>
     </section>
 </div>
-
 <script src="add-income.js"></script>
 </body>
 </html>

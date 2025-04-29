@@ -1,13 +1,16 @@
-<!--add-expense.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Add Expense</title>
-    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="dashboard.css"/>
 </head>
 <body>
+<script>
+    document.body.classList.add(
+        JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
+    );
+</script>
 <div class="sidebar">
     <h2>Budget Tracker</h2>
     <nav>
@@ -15,30 +18,30 @@
             <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="add-income.html">Add Income</a></li>
             <li><a href="add-expense.html" class="active">Add Expense</a></li>
+            <li><a href="settings.html">Settings</a></li>
+            <li><a href="export.html">Export</a></li>
         </ul>
     </nav>
 </div>
-
 <div class="main">
     <header class="top-bar">Add Expense</header>
     <section class="content">
         <form id="expense-form" class="form-container">
             <h2>Add Expense</h2>
-
             <label for="expense-category">Category</label>
             <select id="expense-category" required></select>
-
             <label for="expense-amount">Amount</label>
-            <input type="number" id="expense-amount" required />
-
+            <input type="number" id="expense-amount" required/>
             <label for="expense-date">Date</label>
-            <input type="date" id="expense-date" required />
-
+            <input type="date" id="expense-date" required/>
             <label for="expense-notes">Notes / Subcategory (optional)</label>
-            <textarea id="expense-notes" rows="3" placeholder="Add notes or a custom subcategory"></textarea>
-
+            <textarea id="expense-notes" rows="3"></textarea>
+            <label>
+                <input type="checkbox" id="expense-recurring"/>
+                Recurring monthly
+            </label>
             <button type="submit">Submit</button>
-            <button type="button" onclick="window.location='dashboard.html'">Cancel</button>
+            <button type="button" onclick="location.href='dashboard.html'">Cancel</button>
         </form>
     </section>
 </div>

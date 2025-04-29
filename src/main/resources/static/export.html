@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Export Data – Budget Tracker</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+<script>
+  document.body.classList.add(
+          JSON.parse(localStorage.getItem('settings')||'{}').theme || 'light-theme'
+  );
+</script>
+<div class="sidebar">
+  <h2>Budget Tracker</h2>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="add-income.html">Add Income</a></li>
+      <li><a href="add-expense.html">Add Expense</a></li>
+      <li><a href="settings.html">Settings</a></li>
+      <li><a href="export.html" class="active">Export</a></li>
+    </ul>
+  </nav>
+</div>
+<div class="main">
+  <header class="top-bar">Export Data</header>
+  <section class="content">
+    <div class="form-container">
+      <h2>Download Your Data</h2>
+      <p>Click a button below to export your budget summary and all expenses.</p>
+      <button id="export-csv">Export as CSV</button>
+      <button id="export-json">Export as JSON</button>
+    </div>
+  </section>
+</div>
+<script src="export.js"></script>
+</body>
+</html>

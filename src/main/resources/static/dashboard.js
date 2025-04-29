@@ -1,241 +1,196 @@
-// src/main/resources/static/dashboard.js
-async function loadDashboard() {
+window.__lastDashboardData = null;
+
+async function fetchAndRender() {
     try {
-        const res  = await fetch('/api/budget/summary');
+        const res = await fetch('/api/budget/summary');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (data.error) { alert(data.error); return; }
-
-        // Charts
-        renderCharts(data);
-
-        // Header cards
-        document.getElementById('income-value').textContent    =
-            `$${data.monthlyIncome.toFixed(2)} — ${data.incomeDate}`;
-        document.getElementById('expenses-value').textContent  =
-            `$${data.totalExpenses.toFixed(2)}`;
-        document.getElementById('remaining-value').textContent =
-            `$${data.remainingBudget.toFixed(2)}`;
-
-        // Income list with Edit & Remove
-        const incList = document.getElementById('income-list');
-        incList.innerHTML = `
-      <li>
-        <span class="exp-item">
-          Income — $${data.monthlyIncome.toFixed(2)} — ${data.incomeDate}
-        </span>
-        <button class="edit-income">✎</button>
-        <button class="remove-income">×</button>
-      </li>`;
-        incList.querySelector('.edit-income').onclick = async () => {
-            const oldAmt  = data.monthlyIncome.toFixed(2);
-            const newAmtI = prompt('Enter new income amount:', oldAmt);
-            if (newAmtI === null) return;
-            const newAmt  = parseFloat(newAmtI);
-            if (isNaN(newAmt) || newAmt <= 0) {
-                alert('Amount must be a positive number.');
-                return;
-            }
-            const newFreq = prompt('Enter frequency:', 'monthly');
-            if (newFreq === null) return;
-            const newDate = prompt('Enter new date (YYYY-MM-DD):', data.incomeDate);
-            if (newDate === null) return;
-
-            await fetch('/api/budget/income', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount:    newAmt,
-                    frequency: newFreq,
-                    date:      newDate
-                })
-            });
-            loadDashboard();
-        };
-        incList.querySelector('.remove-income').onclick = async () => {
-            await fetch('/api/budget/income', { method: 'DELETE' });
-            loadDashboard();
-        };
-
-        // Expense list with dates, edit & remove
-        const expList = document.getElementById('expense-list');
-        expList.innerHTML = '';
-        const grouped = data.expenses.reduce((acc, e, i) => {
-            (acc[e.category] = acc[e.category] || []).push({ e, i });
-            return acc;
-        }, {});
-        Object.entries(grouped).forEach(([cat, items]) => {
-            const header = document.createElement('div');
-            header.className = 'category-header';
-            header.textContent = cat;
-            expList.appendChild(header);
-
-            items.forEach(({ e, i }) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-          <span class="exp-item">
-            $${e.amount.toFixed(2)} — ${e.date}
-          </span>
-          <button data-idx="${i}" class="edit-expense">✎</button>
-          <button data-idx="${i}" class="remove-expense">×</button>
-        `;
-
-                // View notes
-                li.querySelector('.exp-item').onclick = () =>
-                    alert(e.notes || 'No notes');
-
-                // Edit expense
-                li.querySelector('.edit-expense').onclick = async evt => {
-                    const idx   = evt.target.dataset.idx;
-                    const exp   = data.expenses[idx];
-                    const newCat = prompt('Enter new category:', exp.category);
-                    if (newCat === null) return;
-                    const newAmtI = prompt('Enter new amount:', exp.amount);
-                    if (newAmtI === null) return;
-                    const newAmt  = parseFloat(newAmtI);
-                    if (isNaN(newAmt) || newAmt <= 0) {
-                        alert('Amount must be a positive number.');
-                        return;
-                    }
-                    const newNotes = prompt('Enter new notes:', exp.notes) || '';
-                    const newDate  = prompt('Enter new date (YYYY-MM-DD):', exp.date);
-                    if (newDate === null) return;
-
-                    // remove old then post updated
-                    await fetch(`/api/budget/expense/${idx}`, { method: 'DELETE' });
-                    await fetch('/api/budget/expense', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            category: newCat,
-                            amount:   newAmt,
-                            notes:    newNotes,
-                            date:     newDate
-                        })
-                    });
-                    loadDashboard();
-                };
-
-                // Remove expense
-                li.querySelector('.remove-expense').onclick = async evt => {
-                    await fetch(
-                        `/api/budget/expense/${evt.target.dataset.idx}`,
-                        { method: 'DELETE' }
-                    );
-                    loadDashboard();
-                };
-
-                expList.appendChild(li);
-            });
-        });
-
+        window.__lastDashboardData = data;
+        renderAll(data, data.expenses);
     } catch (err) {
         console.error(err);
+        alert('Unable to load data: ' + err.message);
     }
 }
 
-window.addEventListener('DOMContentLoaded', loadDashboard);
+function renderAll(orig, exp) {
+    renderCards(orig);
+    renderCharts({ ...orig, expenses: exp });
+    renderLists(orig, exp);
+    showAlert(orig.remainingBudget);
+}
 
-// Chart rendering unchanged
+function renderCards(d) {
+    const cur = getCurrency();
+    document.getElementById('income-value').textContent =
+        `${cur}${d.monthlyIncome.toFixed(2)} — ${d.incomeDate}`;
+    document.getElementById('expenses-value').textContent =
+        `${cur}${d.totalExpenses.toFixed(2)}`;
+    document.getElementById('remaining-value').textContent =
+        `${cur}${d.remainingBudget.toFixed(2)}`;
+}
+
 function renderCharts(data) {
-    const pieCtx = document.getElementById('pie-chart').getContext('2d');
-    const histCtx = document.getElementById('histogram-chart').getContext('2d');
-    let pieLabels = [], pieData = [];
-    let histLabels = [], histData = [];
+    const totals = data.expenses.reduce((a,e) => {
+        a[e.category] = (a[e.category]||0) + e.amount;
+        return a;
+    }, {});
+    const pieLabels = Object.keys(totals),
+        pieData   = Object.values(totals),
+        histData  = data.expenses.map(e=>e.amount),
+        histLabels= histData.map((_,i)=>`#${i+1}`);
 
-    if (data.expenses && data.expenses.length) {
-        const totals = data.expenses.reduce((acc, e) => {
-            acc[e.category] = (acc[e.category]||0) + e.amount;
-            return acc;
-        }, {});
-        pieLabels = Object.keys(totals);
-        pieData   = Object.values(totals);
-        histData  = data.expenses.map(e => e.amount);
-        histLabels= histData.map((_,i) => `#${i+1}`);
-    }
+    new Chart(
+        document.getElementById('pie-chart').getContext('2d'),
+        { type:'pie', data:{ labels:pieLabels, datasets:[{ data:pieData }] } }
+    );
+    new Chart(
+        document.getElementById('histogram-chart').getContext('2d'),
+        { type:'bar',
+            data:{ labels:histLabels, datasets:[{ label:'Amount', data:histData }] },
+            options:{ scales:{ y:{ beginAtZero:true } } }
+        }
+    );
 
-    new Chart(pieCtx, {
-        type: 'pie',
-        data: { labels: pieLabels, datasets: [{ data: pieData }] }
-    });
-    new Chart(histCtx, {
-        type: 'bar',
-        data: { labels: histLabels, datasets: [{ data: histData, label: 'Amount' }] },
-        options: { scales: { y: { beginAtZero: true } } }
+    const bd = document.getElementById('category-breakdown');
+    bd.innerHTML = '';
+    pieLabels.forEach((c,i) => {
+        const li = document.createElement('li');
+        li.textContent = `${c}: ${getCurrency()}${pieData[i].toFixed(2)}`;
+        bd.appendChild(li);
     });
 }
 
+function renderLists(d, exp) {
+    const incL = document.getElementById('income-list');
+    incL.innerHTML = `
+    <li>
+      <span class="exp-item">
+        Income — ${getCurrency()}${d.monthlyIncome.toFixed(2)} — ${d.incomeDate}
+      </span>
+      <button class="edit-income">✎</button>
+      <button class="remove-income">×</button>
+    </li>`;
+    incL.querySelector('.edit-income').onclick   = editIncome;
+    incL.querySelector('.remove-income').onclick = async () => {
+        await fetch('/api/budget/income',{method:'DELETE'});
+        fetchAndRender();
+    };
 
+    const expL = document.getElementById('expense-list');
+    expL.innerHTML = '';
+    const grouped = exp.reduce((a,e,i) => {
+        (a[e.category]=a[e.category]||[]).push({e,i});
+        return a;
+    }, {});
+    Object.entries(grouped).forEach(([cat,items]) => {
+        const h = document.createElement('div');
+        h.className = 'expense-category-header';
+        h.textContent = cat;
+        expL.appendChild(h);
 
+        items.forEach(({e,i}) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+        <span class="exp-item">
+          ${getCurrency()}${e.amount.toFixed(2)} — ${e.date}
+        </span>
+        <button data-idx="${i}" class="edit-expense">✎</button>
+        <button data-idx="${i}" class="remove-expense">×</button>
+      `;
+            li.querySelector('.exp-item').onclick = ()=>alert(e.notes||'No notes');
+            li.querySelector('.edit-expense').onclick   = () => editExpense(d, i);
+            li.querySelector('.remove-expense').onclick = async evt => {
+                await fetch(`/api/budget/expense/${evt.target.dataset.idx}`,{method:'DELETE'});
+                fetchAndRender();
+            };
+            expL.appendChild(li);
+        });
+    });
 
+    const fc = document.getElementById('filter-category');
+    if (fc.options.length===1) {
+        const cats = [...new Set(d.expenses.map(x=>x.category))];
+        cats.forEach(c => {
+            const o = document.createElement('option');
+            o.value = o.textContent = c;
+            fc.appendChild(o);
+        });
+    }
+}
 
+function editIncome() {
+    const d = window.__lastDashboardData;
+    const naI = prompt('New income amount:', d.monthlyIncome.toFixed(2));
+    if (naI===null) return;
+    const na = parseFloat(naI);
+    if (isNaN(na)||na<=0) return alert('Must be positive');
+    const nf = prompt('Frequency:','monthly');
+    if (nf===null) return;
+    const nd = prompt('Date (YYYY-MM-DD):', d.incomeDate);
+    if (nd===null) return;
 
+    fetch('/api/budget/income',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ amount:na, frequency:nf, date:nd })
+    }).then(fetchAndRender);
+}
 
-// async function loadDashboard() {
-//     try {
-//         const res = await fetch('/api/budget/summary');
-//         const data = await res.json();
-//         if (data.error) { alert(data.error); return; }
-//
-//         // Render Charts
-//         renderCharts(data);
-//
-//         // Update Cards
-//         document.getElementById('income-value').textContent    = `$${data.monthlyIncome.toFixed(2)}`;
-//         document.getElementById('expenses-value').textContent  = `$${data.totalExpenses.toFixed(2)}`;
-//         document.getElementById('remaining-value').textContent = `$${data.remainingBudget.toFixed(2)}`;
-//
-//         // Income List
-//         const incList = document.getElementById('income-list');
-//         incList.innerHTML = `<li><span class="exp-item">Income: $${data.monthlyIncome.toFixed(2)}</span><button class="remove-income">×</button></li>`;
-//         incList.querySelector('.remove-income').onclick = async () => { await fetch('/api/budget/income',{method:'DELETE'}); loadDashboard(); };
-//
-//         // Expense List
-//         const expList = document.getElementById('expense-list'); expList.innerHTML = '';
-//         const grouped = data.expenses.reduce((acc,e,i)=>{(acc[e.category]=acc[e.category]||[]).push({e,i});return acc;},{ });
-//         Object.entries(grouped).forEach(([cat,items])=>{
-//             const header = document.createElement('div'); header.className='expense-category-header'; header.textContent=cat; expList.appendChild(header);
-//             items.forEach(({e,i})=>{
-//                 const li=document.createElement('li');
-//                 li.innerHTML=`<span class="exp-item">$${e.amount.toFixed(2)}</span><button data-idx="${i}" class="remove-expense">×</button>`;
-//                 li.querySelector('.exp-item').onclick=()=>alert(e.notes||'No notes');
-//                 li.querySelector('.remove-expense').onclick=async evt=>{await fetch(`/api/budget/expense/${evt.target.dataset.idx}`,{method:'DELETE'});loadDashboard();};
-//                 expList.appendChild(li);
-//             });
-//         });
-//     } catch(err){ console.error(err); }
-// }
-//
-// // Chart rendering
-// function renderCharts(data) {
-//     const pieCtx = document.getElementById('pie-chart').getContext('2d');
-//     const histCtx = document.getElementById('histogram-chart').getContext('2d');
-//     let pieLabels=[], pieData=[];
-//     let histLabels=[], histData=[];
-//
-//     if (data.expenses && data.expenses.length) {
-//         const totals = data.expenses.reduce((acc,e)=>{acc[e.category]=(acc[e.category]||0)+e.amount;return acc;},{});
-//         pieLabels = Object.keys(totals);
-//         pieData   = Object.values(totals);
-//         histData  = data.expenses.map(e=>e.amount);
-//         histLabels= histData.map((_,i)=>`#${i+1}`);
-//     } else {
-//         const demoCats=['Food','Transport','Entertainment','Savings'];
-//         pieLabels=demoCats;
-//         pieData=demoCats.map(()=>Math.floor(Math.random()*100)+20);
-//         histData=Array.from({length:10},()=>Math.floor(Math.random()*200)+10);
-//         histLabels=histData.map((_,i)=>`#${i+1}`);
-//     }
-//
-//     new Chart(pieCtx, {
-//         type:'pie',
-//         data:{ labels:pieLabels, datasets:[{data:pieData}] }
-//     });
-//
-//     new Chart(histCtx, {
-//         type:'bar',
-//         data:{ labels:histLabels, datasets:[{data:histData,label:'Amount'}] },
-//         options:{ scales:{ y:{ beginAtZero:true } } }
-//     });
-// }
-//
-// window.addEventListener('DOMContentLoaded', loadDashboard);
+function editExpense(d, idx) {
+    const e = d.expenses[idx];
+    const nc = prompt('New category:', e.category);
+    if (nc===null) return;
+    const naI = prompt('New amount:', e.amount);
+    if (naI===null) return;
+    const na = parseFloat(naI);
+    if (isNaN(na)||na<=0) return alert('Must be positive');
+    const nn = prompt('Notes:', e.notes||'') || '';
+    const nd = prompt('Date (YYYY-MM-DD):', e.date);
+    if (nd===null) return;
+
+    fetch(`/api/budget/expense/${idx}`,{method:'DELETE'})
+        .then(()=>
+            fetch('/api/budget/expense',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ category:nc, amount:na, notes:nn, date:nd })
+            })
+        )
+        .then(fetchAndRender);
+}
+
+function showAlert(rem) {
+    document.getElementById('budget-alert')
+        .style.display = rem < 0 ? 'block' : 'none';
+}
+
+function getCurrency() {
+    return JSON.parse(localStorage.getItem('settings')||'{}').currency || '$';
+}
+
+function applyFilters() {
+    const d = window.__lastDashboardData;
+    if (!d) return;
+    let ex = d.expenses;
+    const s = document.getElementById('filter-start').value;
+    const e = document.getElementById('filter-end').value;
+    const c = document.getElementById('filter-category').value;
+    if (s) ex = ex.filter(x=>x.date>=s);
+    if (e) ex = ex.filter(x=>x.date<=e);
+    if (c) ex = ex.filter(x=>x.category===c);
+    renderAll(d, ex);
+}
+function resetFilters() {
+    ['filter-start','filter-end','filter-category'].forEach(id=>{
+        document.getElementById(id).value = '';
+    });
+    const d = window.__lastDashboardData;
+    if (d) renderAll(d, d.expenses);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    fetchAndRender();
+    document.getElementById('apply-filters').onclick = applyFilters;
+    document.getElementById('reset-filters').onclick = resetFilters;
+});
