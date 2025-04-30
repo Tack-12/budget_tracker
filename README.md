@@ -1,49 +1,85 @@
-**Budget Tracker**
+Budget Tracker
 
-A simple web app to track income and expenses, built with Java Spring Boot (backend) and vanilla HTML/CSS/JS (frontend).
+A simple web app to track income and expenses, built with Java Spring Boot (backend) and vanilla HTML/CSS/JavaScript (frontend).
 
-**Prerequisites**
+📌 Table of Contents
 
-1.IntelliJ IDEA (or any Java IDE)
+Prerequisites
 
-2.Git
+Features
 
-3.Java (Latest Version)
+How to Run
 
-**Features**
+File Layout
 
-1.Add income (amount, frequency, date)
+✅ Prerequisites
 
-2.Add expenses (category, amount, date, notes; mark as recurring)
+IDE: IntelliJ IDEA (or any Java IDE)
 
-3.Dashboard with summary, charts, and lists
+Version Control: Git
 
-4.Client-side filters by date and category
+Java: JDK 17+ (or latest)
 
-5.Light/Dark theme and currency settings
+🚀 Features
 
-6.Export data as CSV or JSON
+Add Income: Set amount, frequency, and date
 
-**How to Run**
+Add Expense: Category, amount, date, notes, and optional recurring flag
 
-Start the application
+Dashboard: Summary cards, pie chart, bar chart, and detailed lists
+
+Filters: Client-side date-range and category filters
+
+Settings: Light/Dark theme toggle and currency selection (saved locally)
+
+Export: Download data as CSV or JSON
+
+▶️ How to Run
+
+Clone the repository:
+
+git clone <repository_url>
+cd budget-tracker
+
+Build & Start the application:
 
 mvn clean spring-boot:run
 
-Or run the BudgetTrackerApplication main class in IntelliJ.
+Or run the main class named BudgetTrackerApplication in IntelliJ.
 
-Open in browser
-Navigate to:
+Open a browser and go to:
 
 http://localhost:8080
 
-**File Layout**
-src/main/java/com/budgettracker/ — Java backend code
+📁 File Layout
 
-src/main/resources/static/ — HTML, CSS, JS, and assets
+src/
+  main/
+    java/com/budgettracker/
+      BudgetTrackerApplication.java
+      BudgetController.java
+      BudgetProfile.java
+      Income.java
+      Expense.java
+      RecurringExpense.java
+    resources/static/
+      index.html
+      dashboard.html
+      add-income.html
+      add-expense.html
+      settings.html
+      export.html
+      dashboard.css
+      dashboard.js
+      add-income.js
+      add-expense.js
+      settings.js
+      export.js
+      background.gif
 
 
-Creators:
+
+**Creators:**
 Pranaya Pudasaini
 Shawn Govitz
 Manuel E De La Rosa Modesto
